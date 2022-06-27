@@ -49,6 +49,8 @@ model User {
   role          UserRole @default(USER_ROLE_CLIENT)
   accounts      Account[]
   sessions      Session[]
+  ratings       BikeRating[]
+  reservations  BikeReservation[]
 }
 
 model VerificationToken {
@@ -57,4 +59,37 @@ model VerificationToken {
   expires    DateTime
 
   @@unique([identifier, token])
+}
+
+model Bike {
+  id            String    @id @default(cuid())
+  model         String
+  color         String
+  location      String
+  available     Boolean   @default(true)
+  ratings       BikeRating[]
+  reservations  BikeReservation[]
+  createdAt     DateTime  @default(now())
+}
+
+model BikeRating {
+  id            String    @id @default(cuid())
+  userId        String
+  bikeId        String
+  rating        Int
+  comment       String?
+  createdAt     DateTime  @default(now())
+  user          User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  bike          Bike      @relation(fields: [bikeId], references: [id], onDelete: Cascade)
+}
+
+model BikeReservation {
+  id            String    @id @default(cuid())
+  userId        String
+  bikeId        String
+  start         DateTime
+  end           DateTime
+  createdAt     DateTime  @default(now())
+  user          User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  bike          Bike      @relation(fields: [bikeId], references: [id], onDelete: Cascade)
 }

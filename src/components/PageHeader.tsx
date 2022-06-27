@@ -3,7 +3,7 @@ import Link from "next/link";
 
 function PageHeader() {
   return (
-    <header className="container flex justify-between py-4 mx-auto">
+    <header className="flex justify-between py-4 custom-container">
       <b>BikeRental®</b>
       <nav className="flex gap-4">
         <PageHeaderLinks />
