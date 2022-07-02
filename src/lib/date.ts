@@ -1,8 +1,9 @@
-export const formatDate = (dateStr: string) => {
-  const date = new Date(dateStr);
-
-  return date.toLocaleString([], {
+export const formatDate = (date: string | Date) => {
+  return new Date(date).toLocaleString([], {
     dateStyle: "long",
-    timeStyle: "short",
   });
+};
+
+export const addDays = (dateStr: string, days: number) => {
+  return new Date(new Date(dateStr).getTime() + days * 24 * 60 * 60 * 1000);
 };

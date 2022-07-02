@@ -1,11 +1,11 @@
 import { PrismaAdapter } from "@next-auth/prisma-adapter";
 import { UserRole } from "@prisma/client";
-import NextAuth from "next-auth";
+import NextAuth, { NextAuthOptions } from "next-auth";
 import GoogleProvider from "next-auth/providers/google";
 import EmailProvider from "next-auth/providers/email";
 import prisma from "../../../lib/prisma";
 
-export default NextAuth({
+export const authOptions: NextAuthOptions = {
   // Use the Prisma adapter to store user data in the database so we can manage
   // user accounts and their permissions.
   adapter: PrismaAdapter(prisma),
@@ -40,6 +40,7 @@ export default NextAuth({
         });
 
         if (user) {
+          token.id = user.id;
           token.role = user.role;
         }
       }
@@ -50,9 +51,12 @@ export default NextAuth({
     // Append the user's role to the user object in the session. This is used
     // by the front-end exclusively.
     async session({ session, token }) {
+      session.user.id = token.id as string;
       session.user.role = (token.role as UserRole) ?? UserRole.USER_ROLE_CLIENT;
 
       return session;
     },
   },
-});
+};
+
+export default NextAuth(authOptions);

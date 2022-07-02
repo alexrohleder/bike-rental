@@ -1,14 +1,17 @@
 import { Bike } from "@prisma/client";
 import type { NextPage } from "next";
+import Link from "next/link";
 import { FormEventHandler, useState } from "react";
 import useSWRInfinite from "swr/infinite";
-import { formatDate } from "../lib/date";
+import { addDays, formatDate } from "../lib/date";
 import repeat from "../lib/repeat";
 
 const Home: NextPage = () => {
   const [search, setSearch] = useState<Record<string, string | void>>({});
 
-  const res = useSWRInfinite<Array<Bike & { reservation?: { end: string } }>>(
+  const res = useSWRInfinite<
+    Array<Bike & { reservations: { date: string }[]; rating?: number }>
+  >(
     (offset) =>
       `/api/bikes?offset=${offset}&${Object.entries(search)
         .filter(([, value]) => value)
@@ -50,7 +53,11 @@ const Home: NextPage = () => {
         </label>
         <label className="flex-1">
           Availability
-          <input type="datetime-local" name="availability" />
+          <input
+            type="date"
+            name="availability"
+            min={new Date().toISOString().substring(0, 10)}
+          />
         </label>
         <label className="flex-1">
           Rating
@@ -76,8 +83,9 @@ const Home: NextPage = () => {
               <th>Model</th>
               <th>Color</th>
               <th>Location</th>
-              <th>Available</th>
+              <th>Next Availability</th>
               <th>Rating</th>
+              <th className="w-11"></th>
             </tr>
           </thead>
           <tbody>
@@ -87,9 +95,16 @@ const Home: NextPage = () => {
                 <td>{bike.color}</td>
                 <td>{bike.location}</td>
                 <td>
-                  {bike.reservation ? formatDate(bike.reservation.end) : "Now"}
+                  {bike.reservations.length
+                    ? formatDate(addDays(bike.reservations[0].date, 1))
+                    : "Now"}
                 </td>
-                <td>5/5</td>
+                <td>{bike.rating ? `${bike.rating}/5` : "-"}</td>
+                <td className="focus-within:outline-0">
+                  <Link href={`/reserve/${bike.id}`}>
+                    <a className="btn-sm">Reserve</a>
+                  </Link>
+                </td>
               </tr>
             ))}
 
@@ -99,7 +114,7 @@ const Home: NextPage = () => {
                 10,
                 <tr>
                   {repeat(
-                    5,
+                    6,
                     <td>
                       <div className="placeholder" />
                     </td>

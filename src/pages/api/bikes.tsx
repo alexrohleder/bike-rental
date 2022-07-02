@@ -12,7 +12,8 @@ export default api()
       rating: v.numeric().optional(),
     });
 
-    const now = new Date();
+    const today = new Date();
+    today.setUTCHours(0, 0, 0, 0);
 
     res.json(
       await prisma.bike.findMany({
@@ -24,14 +25,9 @@ export default api()
           location: query.location,
           reservations: query.availability
             ? {
-                every: {
-                  OR: {
-                    start: {
-                      gt: query.availability,
-                    },
-                    end: {
-                      lt: query.availability,
-                    },
+                some: {
+                  date: {
+                    equals: query.availability,
                   },
                 },
               }
@@ -40,14 +36,11 @@ export default api()
         include: {
           reservations: {
             select: {
-              end: true,
+              date: true,
             },
             where: {
-              start: {
-                lte: now,
-              },
-              end: {
-                gte: now,
+              date: {
+                equals: today,
               },
             },
           },

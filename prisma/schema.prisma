@@ -66,10 +66,9 @@ model Bike {
   model         String
   color         String
   location      String
-  available     Boolean   @default(true)
+  createdAt     DateTime  @default(now())
   ratings       BikeRating[]
   reservations  BikeReservation[]
-  createdAt     DateTime  @default(now())
 }
 
 model BikeRating {
@@ -77,7 +76,6 @@ model BikeRating {
   userId        String
   bikeId        String
   rating        Int
-  comment       String?
   createdAt     DateTime  @default(now())
   user          User      @relation(fields: [userId], references: [id], onDelete: Cascade)
   bike          Bike      @relation(fields: [bikeId], references: [id], onDelete: Cascade)
@@ -87,8 +85,7 @@ model BikeReservation {
   id            String    @id @default(cuid())
   userId        String
   bikeId        String
-  start         DateTime
-  end           DateTime
+  date          DateTime
   createdAt     DateTime  @default(now())
   user          User      @relation(fields: [userId], references: [id], onDelete: Cascade)
   bike          Bike      @relation(fields: [bikeId], references: [id], onDelete: Cascade)

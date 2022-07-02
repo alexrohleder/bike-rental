@@ -3,6 +3,7 @@ import { GetServerSideProps } from "next";
 import Head from "next/head";
 import Link from "next/link";
 import { formatDate } from "../../../lib/date";
+import nextEncode from "../../../lib/next-encode";
 import prisma from "../../../lib/prisma";
 
 type Props = Bike & {
@@ -50,10 +51,6 @@ function AdminBike(props: Props) {
         <div className="flex gap-2">
           <dt className="font-semibold">Location</dt>
           <dd>{props.location}</dd>
-        </div>
-        <div className="flex gap-2">
-          <dt className="font-semibold">Available</dt>
-          <dd>{props.available ? "Yes" : "No"}</dd>
         </div>
       </dl>
       <h2 className="mt-8 mb-4">Reservations</h2>
@@ -120,7 +117,7 @@ export const getServerSideProps: GetServerSideProps = async (ctx) => {
   }
 
   return {
-    props: JSON.parse(JSON.stringify(bike)),
+    props: nextEncode(bike),
   };
 };
 

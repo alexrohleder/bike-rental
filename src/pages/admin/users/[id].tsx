@@ -3,6 +3,7 @@ import { GetServerSideProps } from "next";
 import Head from "next/head";
 import Link from "next/link";
 import { formatDate } from "../../../lib/date";
+import nextEncode from "../../../lib/next-encode";
 import prisma from "../../../lib/prisma";
 
 type Props = User & {
@@ -126,7 +127,7 @@ export const getServerSideProps: GetServerSideProps = async (ctx) => {
   }
 
   return {
-    props: JSON.parse(JSON.stringify(user)),
+    props: nextEncode(user),
   };
 };
 

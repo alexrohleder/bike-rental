@@ -61,6 +61,10 @@
           @apply pl-8;
         }
       }
+
+      tr:hover {
+        @apply bg-blue-50;
+      }
     }
 
     td:focus-within {
@@ -73,6 +77,10 @@
 
       &:not([type="checkbox"]) {
         @apply w-full h-full;
+      }
+
+      :disabled {
+        @apply opacity-50;
       }
     }
   }
