@@ -4,7 +4,7 @@
 
 @layer base {
   body {
-    overflow-y: scroll;
+    @apply overflow-y-scroll;
   }
 
   h1 {
