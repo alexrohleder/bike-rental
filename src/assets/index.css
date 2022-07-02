@@ -78,10 +78,6 @@
       &:not([type="checkbox"]) {
         @apply w-full h-full;
       }
-
-      :disabled {
-        @apply opacity-50;
-      }
     }
   }
 }
@@ -90,6 +86,10 @@ form {
   input,
   select {
     @apply rounded-md bg-white py-2 px-3 text-sm leading-5 text-black border h-9 w-full;
+
+    &:disabled {
+      @apply bg-gray-100;
+    }
   }
 }
 

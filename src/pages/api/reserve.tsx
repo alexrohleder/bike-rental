@@ -9,6 +9,20 @@ export default api().post(async (req, res) => {
     date: v.timestamp(),
   });
 
+  const previousReservation = await prisma.bikeReservation.findFirst({
+    where: {
+      bikeId: data.bikeId,
+      date: data.date,
+    },
+  });
+
+  if (previousReservation) {
+    return res.status(400).json({
+      status: 400,
+      message: "Bad Request",
+    });
+  }
+
   res.json(
     await prisma.bikeReservation.create({
       data: {

@@ -212,7 +212,7 @@ function AdminBikes() {
                       type="checkbox"
                       name="available"
                       form={formId}
-                      defaultChecked
+                      defaultChecked={bike.available}
                     />
                   </td>
                   <td tabIndex={-1} className="focus-within:outline-0">

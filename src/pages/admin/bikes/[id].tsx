@@ -10,13 +10,12 @@ type Props = Bike & {
   reservations: Array<{
     user: {
       id: string;
-      name?: string;
-      email: string;
+      name: string | null;
+      email: string | null;
     };
     id: string;
-    start: string;
-    end: string;
-    createdAt: string;
+    date: Date;
+    createdAt: Date;
   }>;
 };
 
@@ -52,6 +51,10 @@ function AdminBike(props: Props) {
           <dt className="font-semibold">Location</dt>
           <dd>{props.location}</dd>
         </div>
+        <div className="flex gap-2">
+          <dt className="font-semibold">Available</dt>
+          <dd>{props.available ? "Yes" : "No"}</dd>
+        </div>
       </dl>
       <h2 className="mt-8 mb-4">Reservations</h2>
       {props.reservations.length === 0 ? (
@@ -62,9 +65,8 @@ function AdminBike(props: Props) {
             <thead>
               <tr>
                 <th>User</th>
+                <th>Reservation Created At</th>
                 <th>Reserved At</th>
-                <th>Reserved From</th>
-                <th>Reserved To</th>
               </tr>
             </thead>
             <tbody>
@@ -78,8 +80,7 @@ function AdminBike(props: Props) {
                     </Link>
                   </td>
                   <td>{formatDate(reservation.createdAt)}</td>
-                  <td>{formatDate(reservation.start)}</td>
-                  <td>{formatDate(reservation.end)}</td>
+                  <td>{formatDate(reservation.date)}</td>
                 </tr>
               ))}
             </tbody>
@@ -90,13 +91,17 @@ function AdminBike(props: Props) {
   );
 }
 
-export const getServerSideProps: GetServerSideProps = async (ctx) => {
+export const getServerSideProps: GetServerSideProps<Props> = async (ctx) => {
   const bike = await prisma.bike.findUnique({
     where: {
       id: ctx.params!.id as string,
     },
     include: {
       reservations: {
+        select: {
+          date: true,
+          createdAt: true,
+        },
         include: {
           user: {
             select: {
@@ -105,6 +110,9 @@ export const getServerSideProps: GetServerSideProps = async (ctx) => {
               email: true,
             },
           },
+        },
+        orderBy: {
+          createdAt: "desc",
         },
       },
     },

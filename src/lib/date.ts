@@ -1,7 +1,8 @@
-export const formatDate = (date: string | Date) => {
-  return new Date(date).toLocaleString([], {
-    dateStyle: "long",
-  });
+export const formatDate = (date: string | number | Date) => {
+  const today = new Date().toLocaleString([], { dateStyle: "long" });
+  const formatted = new Date(date).toLocaleString([], { dateStyle: "long" });
+
+  return formatted === today ? "Today" : formatted;
 };
 
 export const addDays = (dateStr: string, days: number) => {

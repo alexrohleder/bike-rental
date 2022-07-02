@@ -3,17 +3,16 @@ import type { NextPage } from "next";
 import Link from "next/link";
 import { FormEventHandler, useState } from "react";
 import useSWRInfinite from "swr/infinite";
-import { addDays, formatDate } from "../lib/date";
 import repeat from "../lib/repeat";
 
 const Home: NextPage = () => {
   const [search, setSearch] = useState<Record<string, string | void>>({});
 
   const res = useSWRInfinite<
-    Array<Bike & { reservations: { date: string }[]; rating?: number }>
+    Array<Bike & { nextAvailability?: string; rating?: number }>
   >(
     (offset) =>
-      `/api/bikes?offset=${offset}&${Object.entries(search)
+      `/api/bikes?offset=${offset}&available=on&${Object.entries(search)
         .filter(([, value]) => value)
         .map(([key, value]) => `&${key}=${value}`)
         .join("")}`
@@ -24,6 +23,8 @@ const Home: NextPage = () => {
     event.preventDefault();
 
     const form = event.currentTarget;
+
+    setSize(0);
 
     setSearch({
       model: form.model.value,
@@ -94,11 +95,7 @@ const Home: NextPage = () => {
                 <td>{bike.model}</td>
                 <td>{bike.color}</td>
                 <td>{bike.location}</td>
-                <td>
-                  {bike.reservations.length
-                    ? formatDate(addDays(bike.reservations[0].date, 1))
-                    : "Now"}
-                </td>
+                <td>{bike.nextAvailability}</td>
                 <td>{bike.rating ? `${bike.rating}/5` : "-"}</td>
                 <td className="focus-within:outline-0">
                   <Link href={`/reserve/${bike.id}`}>

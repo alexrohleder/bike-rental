@@ -66,6 +66,7 @@ model Bike {
   model         String
   color         String
   location      String
+  available     Boolean   @default(true)
   createdAt     DateTime  @default(now())
   ratings       BikeRating[]
   reservations  BikeReservation[]

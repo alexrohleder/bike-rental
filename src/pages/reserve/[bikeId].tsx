@@ -10,13 +10,13 @@ import prisma from "../../lib/prisma";
 import { request } from "../../lib/web";
 
 type Props = {
-  bike: Bike & { available: boolean };
+  bike: Bike;
 };
 
 function Reserve(props: Props) {
   const session = useSession();
   const router = useRouter();
-  const [reserved, setReserved] = useState(false);
+  const [available, setAvailability] = useState(!props.bike.available);
 
   const handleReserve: FormEventHandler<HTMLFormElement> = async (event) => {
     event.preventDefault();
@@ -37,7 +37,7 @@ function Reserve(props: Props) {
         }
       )
       .then(() => {
-        setReserved(true);
+        setAvailability(true);
       });
   };
 
@@ -63,7 +63,7 @@ function Reserve(props: Props) {
       </dl>
       {session.status === "authenticated" ? (
         <form onSubmit={handleReserve}>
-          <fieldset className="flex gap-4" disabled={reserved}>
+          <fieldset className="flex gap-4" disabled={available}>
             <label>
               Date of Reservation
               <input
@@ -80,6 +80,9 @@ function Reserve(props: Props) {
               </button>
             </div>
           </fieldset>
+          {!props.bike.available && (
+            <p className="mt-4">This bike is not available at the moment.</p>
+          )}
         </form>
       ) : (
         <div>
@@ -102,9 +105,6 @@ export const getStaticProps: GetStaticProps<Props> = async (ctx) => {
     where: {
       id: ctx.params!.bikeId as string,
     },
-    include: {
-      reservations: true,
-    },
   });
 
   if (bike === null) {
@@ -115,10 +115,7 @@ export const getStaticProps: GetStaticProps<Props> = async (ctx) => {
 
   return {
     props: {
-      bike: nextEncode({
-        ...bike,
-        available: bike.reservations.length === 0,
-      }),
+      bike: nextEncode(bike),
     },
   };
 };

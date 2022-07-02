@@ -14,9 +14,8 @@ type Props = User & {
       location: string;
     };
     id: string;
-    start: string;
-    end: string;
-    createdAt: string;
+    date: Date;
+    createdAt: Date;
   }>;
 };
 
@@ -71,9 +70,8 @@ function AdminUser(props: Props) {
               <tr>
                 <th>Bike Model</th>
                 <th>Bike Location</th>
+                <th>Reservation Created At</th>
                 <th>Reserved At</th>
-                <th>Reserved From</th>
-                <th>Reserved To</th>
               </tr>
             </thead>
             <tbody>
@@ -88,8 +86,7 @@ function AdminUser(props: Props) {
                   </td>
                   <td>{reservation.bike.location}</td>
                   <td>{formatDate(reservation.createdAt)}</td>
-                  <td>{formatDate(reservation.start)}</td>
-                  <td>{formatDate(reservation.end)}</td>
+                  <td>{formatDate(reservation.date)}</td>
                 </tr>
               ))}
             </tbody>
@@ -100,13 +97,17 @@ function AdminUser(props: Props) {
   );
 }
 
-export const getServerSideProps: GetServerSideProps = async (ctx) => {
+export const getServerSideProps: GetServerSideProps<Props> = async (ctx) => {
   const user = await prisma.user.findUnique({
     where: {
       id: ctx.params!.id as string,
     },
     include: {
       reservations: {
+        select: {
+          date: true,
+          createdAt: true,
+        },
         include: {
           bike: {
             select: {
@@ -115,6 +116,9 @@ export const getServerSideProps: GetServerSideProps = async (ctx) => {
               location: true,
             },
           },
+        },
+        orderBy: {
+          createdAt: "desc",
         },
       },
     },
