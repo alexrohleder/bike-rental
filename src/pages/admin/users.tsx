@@ -185,7 +185,12 @@ function AdminUsers() {
                     />
                   </td>
                   <td>
-                    <select name="role" defaultValue={user.role} required>
+                    <select
+                      name="role"
+                      form={formId}
+                      defaultValue={user.role}
+                      required
+                    >
                       <option value="USER_ROLE_ADMIN">Admin</option>
                       <option value="USER_ROLE_CLIENT">Client</option>
                     </select>
