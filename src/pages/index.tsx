@@ -1,15 +1,75 @@
 import { Bike } from "@prisma/client";
 import type { NextPage } from "next";
+import { FormEventHandler, useState } from "react";
 import useSWRInfinite from "swr/infinite";
+import { formatDate } from "../lib/date";
 import repeat from "../lib/repeat";
 
 const Home: NextPage = () => {
-  const res = useSWRInfinite<Bike[]>((offset) => `/api/bikes?offset=${offset}`);
+  const [search, setSearch] = useState<Record<string, string | void>>({});
+
+  const res = useSWRInfinite<Array<Bike & { reservation?: { end: string } }>>(
+    (offset) =>
+      `/api/bikes?offset=${offset}&${Object.entries(search)
+        .filter(([, value]) => value)
+        .map(([key, value]) => `&${key}=${value}`)
+        .join("")}`
+  );
   const { data, isValidating, size, setSize } = res;
+
+  const handleSearch: FormEventHandler<HTMLFormElement> = async (event) => {
+    event.preventDefault();
+
+    const form = event.currentTarget;
+
+    setSearch({
+      model: form.model.value,
+      color: form.color.value,
+      location: form.location.value,
+      availability: form.availability.value
+        ? new Date(form.availability.value).getTime().toString()
+        : undefined,
+      rating: form.rating.value,
+    });
+  };
 
   return (
     <div>
-      <div className="mt-8 table-wrapper">
+      <form className="flex gap-4 mt-8 mb-2" onSubmit={handleSearch}>
+        <label className="flex-1">
+          Model
+          <input type="search" name="model" />
+        </label>
+        <label className="flex-1">
+          Color
+          <input type="search" name="color" />
+        </label>
+        <label className="flex-1">
+          Location
+          <input type="search" name="location" />
+        </label>
+        <label className="flex-1">
+          Availability
+          <input type="datetime-local" name="availability" />
+        </label>
+        <label className="flex-1">
+          Rating
+          <select name="rating">
+            <option></option>
+            <option value="5">5</option>
+            <option value="4">4</option>
+            <option value="3">3</option>
+            <option value="2">2</option>
+            <option value="1">1</option>
+          </select>
+        </label>
+        <div className="flex items-end">
+          <button type="submit" className="btn btn-blue">
+            Search
+          </button>
+        </div>
+      </form>
+      <div className="mt table-wrapper">
         <table className="table-fixed">
           <thead>
             <tr>
@@ -17,51 +77,21 @@ const Home: NextPage = () => {
               <th>Color</th>
               <th>Location</th>
               <th>Available</th>
+              <th>Rating</th>
             </tr>
           </thead>
           <tbody>
-            {data?.flat(2).map((bike) => {
-              const formId = `form-${bike.id}`;
-
-              return (
-                <tr key={bike.id}>
-                  <td>
-                    <input
-                      type="text"
-                      name="model"
-                      form={formId}
-                      defaultValue={bike.model}
-                    />
-                  </td>
-                  <td>
-                    <input
-                      type="text"
-                      name="color"
-                      form={formId}
-                      defaultValue={bike.color}
-                      required
-                    />
-                  </td>
-                  <td>
-                    <input
-                      type="text"
-                      name="location"
-                      form={formId}
-                      defaultValue={bike.location}
-                      required
-                    />
-                  </td>
-                  <td>
-                    <input
-                      type="checkbox"
-                      name="available"
-                      form={formId}
-                      defaultChecked={bike.available}
-                    />
-                  </td>
-                </tr>
-              );
-            })}
+            {data?.flat(2).map((bike) => (
+              <tr key={bike.id}>
+                <td>{bike.model}</td>
+                <td>{bike.color}</td>
+                <td>{bike.location}</td>
+                <td>
+                  {bike.reservation ? formatDate(bike.reservation.end) : "Now"}
+                </td>
+                <td>5/5</td>
+              </tr>
+            ))}
 
             {!data &&
               isValidating &&
@@ -69,7 +99,7 @@ const Home: NextPage = () => {
                 10,
                 <tr>
                   {repeat(
-                    4,
+                    5,
                     <td>
                       <div className="placeholder" />
                     </td>

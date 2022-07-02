@@ -4,14 +4,51 @@ import { v, validate } from "../../lib/validation";
 
 export default api()
   .get(async (req, res) => {
+    const query = validate(req.query, {
+      model: v.string().optional(),
+      color: v.string().optional(),
+      location: v.string().optional(),
+      availability: v.timestamp().optional(),
+      rating: v.numeric().optional(),
+    });
+
+    const now = new Date();
+
     res.json(
       await prisma.bike.findMany({
         skip: Number(req.query.offset) * 10,
         take: 10,
+        where: {
+          model: query.model,
+          color: query.color,
+          location: query.location,
+          reservations: query.availability
+            ? {
+                every: {
+                  OR: {
+                    start: {
+                      gt: query.availability,
+                    },
+                    end: {
+                      lt: query.availability,
+                    },
+                  },
+                },
+              }
+            : undefined,
+        },
         include: {
-          _count: {
+          reservations: {
             select: {
-              reservations: true,
+              end: true,
+            },
+            where: {
+              start: {
+                lte: now,
+              },
+              end: {
+                gte: now,
+              },
             },
           },
         },

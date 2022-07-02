@@ -10,9 +10,20 @@ const checkbox = () =>
     .regex(/^(on|off)$/)
     .transform((value) => value === "on");
 
+// Convert the strings with numbers to actual numbers. Useful for query strings.
+const numeric = () =>
+  z
+    .string()
+    .regex(/^[\d]+$/)
+    .transform((value) => parseInt(value, 10));
+
+const timestamp = () => numeric().transform((value) => new Date(value));
+
 export const v = {
   ...z,
   string,
+  numeric,
+  timestamp,
   checkbox,
 };
 
