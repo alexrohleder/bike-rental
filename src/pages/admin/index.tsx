@@ -9,15 +9,15 @@ function AdminIndex() {
       </Head>
       <h1>Dashboard</h1>
       <nav className="mt-8">
-        <ul>
+        <ul className="list-disc">
           <li>
             <Link href="/admin/bikes">
-              <a>Bikes</a>
+              <a>Manage Bikes</a>
             </Link>
           </li>
           <li>
             <Link href="/admin/users">
-              <a>Users</a>
+              <a>Manage Users</a>
             </Link>
           </li>
         </ul>
