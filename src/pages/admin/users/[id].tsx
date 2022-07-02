@@ -104,10 +104,6 @@ export const getServerSideProps: GetServerSideProps<Props> = async (ctx) => {
     },
     include: {
       reservations: {
-        select: {
-          date: true,
-          createdAt: true,
-        },
         include: {
           bike: {
             select: {
