@@ -1,1 +1,1 @@
-[Live demo](bike-rental-psi.vercel.app)
+[Live demo](https://bike-rental-psi.vercel.app/)
