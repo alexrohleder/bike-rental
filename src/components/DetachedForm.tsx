@@ -6,7 +6,17 @@ type Props = React.ComponentPropsWithoutRef<"form"> & {
   onSubmit: React.FormEventHandler<HTMLFormElement>;
 };
 
-function EmptyForm(props: Props) {
+/**
+ * A form that renders outside of it's parent.
+ *
+ * This component is useful for elements that cannot contain forms such as a table.
+ *
+ * The form inputs and the submit button must have the form attribute set to the id of the form.
+ *
+ * @example <input type="text" form="my-form-id" />
+ * @example <button type="submit" form="my-form-id" />
+ */
+function DetachedForm(props: Props) {
   const [didMount, setMount] = useState(false);
 
   useEffect(() => {
@@ -27,4 +37,4 @@ function EmptyForm(props: Props) {
     : null;
 }
 
-export default EmptyForm;
+export default DetachedForm;

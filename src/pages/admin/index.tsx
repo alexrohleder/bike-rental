@@ -11,6 +11,11 @@ function AdminIndex() {
               <a>Bikes</a>
             </Link>
           </li>
+          <li>
+            <Link href="/admin/users">
+              <a>Users</a>
+            </Link>
+          </li>
         </ul>
       </nav>
     </div>

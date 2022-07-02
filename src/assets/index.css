@@ -71,7 +71,8 @@
       @apply outline outline-blue-600;
     }
 
-    input {
+    input,
+    select {
       @apply outline-none bg-transparent;
 
       &:not([type="checkbox"]) {

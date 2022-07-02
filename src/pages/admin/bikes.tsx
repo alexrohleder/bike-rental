@@ -1,7 +1,7 @@
 import { Bike } from "@prisma/client";
 import { toast } from "react-toastify";
 import useSWRInfinite from "swr/infinite";
-import EmptyForm from "../../components/EmptyForm";
+import DetachedForm from "../../components/DetachedForm";
 import useSet from "../../hooks/useSet";
 import repeat from "../../lib/repeat";
 import { request } from "../../lib/web";
@@ -99,7 +99,9 @@ function AdminBikes() {
 
   return (
     <div>
-      <h1>Bikes</h1>
+      <h1>
+        <span className="text-gray-500">Dashboard ·</span> Bikes
+      </h1>
       <div className="mt-8 table-wrapper">
         <table className="table-fixed">
           <thead>
@@ -149,7 +151,7 @@ function AdminBikes() {
                   defaultChecked
                 />
               </td>
-              <td tabIndex={-1} className="focus-within:outline-none">
+              <td tabIndex={-1} className="focus-within:outline-0">
                 <button
                   type="submit"
                   form="form-create-bike"
@@ -160,7 +162,7 @@ function AdminBikes() {
                 </button>
               </td>
 
-              <EmptyForm id="form-create-bike" onSubmit={handleCreate} />
+              <DetachedForm id="form-create-bike" onSubmit={handleCreate} />
             </tr>
 
             {data?.flat(2).map((bike) => {
@@ -221,7 +223,7 @@ function AdminBikes() {
                     </fieldset>
                   </td>
 
-                  <EmptyForm
+                  <DetachedForm
                     id={formId}
                     onSubmit={(event) => handleUpdate(bike, event)}
                   />
