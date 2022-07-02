@@ -1,4 +1,4 @@
-import { Bike, BikeReservation } from "@prisma/client";
+import { Bike, BikeRating, BikeReservation } from "@prisma/client";
 import { GetStaticPaths, GetStaticProps } from "next";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
@@ -23,6 +23,10 @@ function Reserve(props: Props) {
     `/api/reservations?bikeId=${props.bike.id}&userId=${session?.data?.user?.id}`
   );
 
+  const { data: rating, mutate: refreshRating } = useSWR<BikeRating>(
+    `/api/ratings?bikeId=${props.bike.id}&userId=${session?.data?.user?.id}`
+  );
+
   const handleReserve: FormEventHandler<HTMLFormElement> = async (event) => {
     event.preventDefault();
 
@@ -43,6 +47,25 @@ function Reserve(props: Props) {
       )
       .then(() => {
         refresh();
+      });
+  };
+
+  const handleRating = async (newRating: number) => {
+    toast
+      .promise(
+        request("post", "/api/ratings", {
+          userId: session.data!.user.id,
+          bikeId: router.query.bikeId,
+          rating: newRating,
+        }),
+        {
+          pending: "Rating bike...",
+          success: "Bike rated!",
+          error: "Error rating bike 😢",
+        }
+      )
+      .then(() => {
+        refreshRating();
       });
   };
 
@@ -109,6 +132,18 @@ function Reserve(props: Props) {
           {!props.bike.available && (
             <p className="my-4">This bike is not available at the moment.</p>
           )}
+          <h2 className="mt-8 mb-4">Your rating</h2>
+          <select
+            defaultValue={rating?.rating}
+            onChange={(event) => handleRating(parseInt(event.target.value, 10))}
+          >
+            <option disabled={!!rating}>No rating</option>
+            <option value="5">5</option>
+            <option value="4">4</option>
+            <option value="3">3</option>
+            <option value="2">2</option>
+            <option value="1">1</option>
+          </select>
           <h2 className="mt-8 mb-4">Your Reservations</h2>
           {!reservations || reservations.length === 0 ? (
             <div>No reservations yet.</div>

@@ -37,9 +37,11 @@ function PageHeaderLinks() {
 
   return (
     <>
-      <Link href="/admin">
-        <a>Dashboard</a>
-      </Link>
+      {session?.data?.user?.role !== "USER_ROLE_CLIENT" && (
+        <Link href="/admin">
+          <a>Dashboard</a>
+        </Link>
+      )}
       <Link href={`/api/auth/signout?callbackUrl=${router.asPath}`}>
         <a>Sign Out</a>
       </Link>
