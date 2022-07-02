@@ -1,4 +1,5 @@
 import { User } from "@prisma/client";
+import Link from "next/link";
 import { toast } from "react-toastify";
 import useSWRInfinite from "swr/infinite";
 import DetachedForm from "../../components/DetachedForm";
@@ -12,6 +13,36 @@ function AdminUsers() {
 
   // We use this to keep track of which buttons we need to disable
   const runningRequests = useSet();
+
+  const handleCreate = (event: React.FormEvent<HTMLFormElement>) => {
+    const form = event.currentTarget;
+
+    runningRequests.add("create");
+
+    toast
+      .promise(
+        request("post", "/api/users", {
+          name: form.displayName.value,
+          email: form.email.value,
+          role: form.role.value,
+        }),
+        {
+          pending: "Creating user...",
+          success: "User created!",
+          error: "Error creating user 😢",
+        }
+      )
+      .then(() => {
+        refetch();
+      })
+      .then(() => {
+        form.reset();
+        form.displayName.focus();
+      })
+      .finally(() => {
+        runningRequests.remove("create");
+      });
+  };
 
   const handleUpdate = (
     user: User,
@@ -68,7 +99,13 @@ function AdminUsers() {
   return (
     <div>
       <h1>
-        <span className="text-gray-500">Dashboard ·</span> Users
+        <span className="text-gray-500">
+          <Link href="/admin">
+            <a>Dashboard</a>
+          </Link>
+          {" · "}
+        </span>{" "}
+        Users
       </h1>
       <div className="mt-8 table-wrapper">
         <table className="table-fixed">
@@ -77,10 +114,55 @@ function AdminUsers() {
               <th>Name</th>
               <th>Email</th>
               <th>Role</th>
-              <th></th>
+              <th className="w-[210px]"></th>
             </tr>
           </thead>
           <tbody>
+            <tr className="bg-blue-50">
+              <td>
+                <input
+                  type="text"
+                  name="displayName"
+                  form="form-create-user"
+                  placeholder="John Doe"
+                  required
+                  autoFocus
+                />
+              </td>
+              <td>
+                <input
+                  type="text"
+                  name="email"
+                  form="form-create-user"
+                  placeholder="john.doe@example.com"
+                  required
+                />
+              </td>
+              <td>
+                <select
+                  name="role"
+                  form="form-create-user"
+                  defaultValue="USER_ROLE_CLIENT"
+                  required
+                >
+                  <option value="USER_ROLE_ADMIN">Admin</option>
+                  <option value="USER_ROLE_CLIENT">Client</option>
+                </select>
+              </td>
+              <td tabIndex={-1} className="focus-within:outline-0">
+                <button
+                  type="submit"
+                  form="form-create-user"
+                  className="btn-sm btn-blue"
+                  disabled={runningRequests.includes("create")}
+                >
+                  Create
+                </button>
+              </td>
+
+              <DetachedForm id="form-create-user" onSubmit={handleCreate} />
+            </tr>
+
             {data?.flat(2).map((user) => {
               const formId = `form-${user.id}`;
 
@@ -109,7 +191,13 @@ function AdminUsers() {
                     </select>
                   </td>
                   <td tabIndex={-1} className="focus-within:outline-0">
-                    <fieldset disabled={runningRequests.includes(user.id)}>
+                    <Link href={`/admin/bikes/${user.id}`}>
+                      <a className="mr-1 btn-sm">Details</a>
+                    </Link>
+                    <fieldset
+                      disabled={runningRequests.includes(user.id)}
+                      className="inline"
+                    >
                       <button
                         type="submit"
                         form={formId}
@@ -141,7 +229,7 @@ function AdminUsers() {
                 10,
                 <tr>
                   {repeat(
-                    5,
+                    4,
                     <td>
                       <div className="placeholder" />
                     </td>
