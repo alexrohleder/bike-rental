@@ -1,4 +1,6 @@
 import { Bike } from "@prisma/client";
+import Head from "next/head";
+import Link from "next/link";
 import { toast } from "react-toastify";
 import useSWRInfinite from "swr/infinite";
 import DetachedForm from "../../components/DetachedForm";
@@ -99,8 +101,17 @@ function AdminBikes() {
 
   return (
     <div>
+      <Head>
+        <title>Bikes – Dashboard – BikeRental®</title>
+      </Head>
       <h1>
-        <span className="text-gray-500">Dashboard ·</span> Bikes
+        <span className="text-gray-500">
+          <Link href="/admin">
+            <a>Dashboard</a>
+          </Link>
+          {" · "}
+        </span>
+        Bikes
       </h1>
       <div className="mt-8 table-wrapper">
         <table className="table-fixed">
@@ -110,7 +121,7 @@ function AdminBikes() {
               <th>Color</th>
               <th>Location</th>
               <th>Available</th>
-              <th></th>
+              <th className="w-[210px]"></th>
             </tr>
           </thead>
           <tbody>
@@ -204,8 +215,14 @@ function AdminBikes() {
                       defaultChecked={bike.available}
                     />
                   </td>
-                  <td tabIndex={-1} className="focus-within:outline-none">
-                    <fieldset disabled={runningRequests.includes(bike.id)}>
+                  <td tabIndex={-1} className="focus-within:outline-0">
+                    <Link href={`/admin/bikes/${bike.id}`}>
+                      <a className="mr-1 btn-sm">Details</a>
+                    </Link>
+                    <fieldset
+                      disabled={runningRequests.includes(bike.id)}
+                      className="inline"
+                    >
                       <button
                         type="submit"
                         form={formId}

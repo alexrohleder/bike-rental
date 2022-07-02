@@ -1,8 +1,12 @@
+import Head from "next/head";
 import Link from "next/link";
 
 function AdminIndex() {
   return (
     <div>
+      <Head>
+        <title>Dashboard – BikeRental®</title>
+      </Head>
       <h1>Dashboard</h1>
       <nav className="mt-8">
         <ul>

@@ -10,6 +10,10 @@
   h1 {
     @apply text-4xl;
   }
+
+  h2 {
+    @apply text-2xl;
+  }
 }
 
 .btn,
@@ -45,10 +49,6 @@
       &:first-child {
         @apply pl-8;
       }
-
-      &:last-child {
-        @apply pr-8;
-      }
     }
 
     tbody {
@@ -59,10 +59,6 @@
 
         &:first-child {
           @apply pl-8;
-        }
-
-        &:last-child {
-          @apply pr-8;
         }
       }
     }
